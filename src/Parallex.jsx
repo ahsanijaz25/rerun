@@ -68,43 +68,72 @@ export default function Parallex() {
   const [isHidden, setIsHidden] = useState(false); 
   const [previousScrollY, setPreviousScrollY] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // useEffect(() => {
+
+  //   const unsubscribe = scrollYProgress.onChange((latestScroll) => {
+  //     const currentScrollY = latestScroll * window.innerHeight;
+  //     if (currentScrollY >= previousScrollY) {
+  //       setIsHidden(true);
+  //     } else if (currentScrollY < previousScrollY) {
+  //       setIsHidden(false);
+  //     }
+  //     setPreviousScrollY(currentScrollY); 
+  //   });
+
+
+  //   return () => unsubscribe(); 
+  // }, [scrollY]);
+
+
+  const [imageWidth, setImageWidth] = useState(window.innerWidth); // Default width is 100vw (viewport width)
+
+  // Handle scroll event
+  const handleScroll = () => {
+    // Get the scroll position (window.scrollY gives the vertical scroll position)
+    const scrollPosition = window.scrollY;
+
+    // Calculate the new width based on the scroll position
+    let newWidth = window.innerWidth - scrollPosition * 10; // Adjust the shrinking rate as needed
+    // Set a minimum width (e.g., 50vw) to avoid the image disappearing
+    if (newWidth < window.innerWidth * 0.5) newWidth = window.innerWidth * 0.5;
+
+    setImageWidth(newWidth);
+  };
+
+  // Attach the scroll event listener on component mount
   useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
 
-    const unsubscribe = scrollYProgress.onChange((latestScroll) => {
-      const currentScrollY = latestScroll * window.innerHeight;
-      if (currentScrollY >= previousScrollY) {
-        setIsHidden(true);
-      } else if (currentScrollY < previousScrollY) {
-        setIsHidden(false);
-      }
-      setPreviousScrollY(currentScrollY); 
-    });
-
-
-    return () => unsubscribe(); 
-  }, [scrollY]);
-
-
-  useEffect(() => {
-    const handleResize = () => {
-        setWindowWidth(window.innerWidth);
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
     };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-}, []);
+  }, []);
 
 // Calculate margin dynamically
 const getMarginStyle = () => {
-  if (isHidden ) {
-    return "0";
-  }
-  if (windowWidth < 1200 && !isHidden && windowWidth > 600 ) {
-      return "-100px 0 0";
-  }  else if(windowWidth < 600 && !isHidden)  {
-      return " 150px 0 150px";
+  // if (imageWidth < 1000 ) {
+  //   return "0";
+  // }
+  if (windowWidth < 1200 && windowWidth > 600 ) {
+    if (imageWidth < 1000 ) {
+      return "0";
+    }else{
+      return "-100px 0 50px";
+    }
+  }  else if(windowWidth < 600 )  {
+    if (imageWidth < 300 ) {
+      return "0";
+    }else{
+      return "150px 0 200px";
+    }
+    
   } else{
+    if (imageWidth < 1000 ) {
+      return "0";
+    }else{
       return "-250px 0 0";
+    }
   }
 };
 
@@ -187,8 +216,8 @@ const getWidthStyle = () => {
         </motion.div>
 
         {/* Background Section */}
-        <motion.div className="homeBg" style={{ width: getWidthStyle(), }}>
-          <img src={homenewbg} alt="Background" style={{ margin: getMarginStyle()}}/>
+        <motion.div className="homeBg" style={{  width: `${imageWidth}px`, }}>
+          <img src={homenewbg} alt="Background" style={{ margin: getMarginStyle(), }}/>
         </motion.div>
         <div >
           <h1>Unlock the Power of <span>AI</span> for Your Business</h1>

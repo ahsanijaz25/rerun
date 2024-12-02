@@ -469,8 +469,8 @@ section.parallexSec > div {
   border-radius: 100%;
   border: none;
   font-size: 18px;
-  width: 30px;
-  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   display: none;
 
 }
